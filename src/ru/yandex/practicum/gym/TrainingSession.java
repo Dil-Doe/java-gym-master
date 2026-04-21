@@ -2,10 +2,10 @@ package ru.yandex.practicum.gym;
 
 public class TrainingSession {
 
-    private Group group;
-    private Coach coach;
-    private DayOfWeek dayOfWeek;
-    private TimeOfDay timeOfDay;
+    private final Group group;
+    private final Coach coach;
+    private final DayOfWeek dayOfWeek;
+    private final TimeOfDay timeOfDay;
 
     public TrainingSession(Group group, Coach coach, DayOfWeek dayOfWeek, TimeOfDay timeOfDay) {
         this.group = group;

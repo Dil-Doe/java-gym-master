@@ -2,9 +2,9 @@ package ru.yandex.practicum.gym;
 
 public class Group {
 
-    private String title;
-    private Age age;
-    private int duration;
+    private final String title;
+    private final Age age;
+    private final int duration;
 
     public Group(String title, Age age, int duration) {
         this.title = title;

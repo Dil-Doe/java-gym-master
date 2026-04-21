@@ -11,36 +11,24 @@ public class Timetable {
         DayOfWeek day = trainingSession.getDayOfWeek();
         TimeOfDay time = trainingSession.getTimeOfDay();
 
-        TreeMap<TimeOfDay, List<TrainingSession>> dayMap = timetable.get(day);
-        if (dayMap == null) {
-            dayMap = new TreeMap<>();
-            timetable.put(day, dayMap);
-        }
+        TreeMap<TimeOfDay, List<TrainingSession>> dayMap =
+                timetable.computeIfAbsent(day, k -> new TreeMap<>());
 
-        List<TrainingSession> timeList = dayMap.get(time);
-        if (timeList == null) {
-            timeList = new ArrayList<>();
-            dayMap.put(time, timeList);
-        }
+        List<TrainingSession> timeList =
+                dayMap.computeIfAbsent(time, k -> new ArrayList<>());
 
         timeList.add(trainingSession);
     }
 
-    public List<TrainingSession> getTrainingSessionsForDay(DayOfWeek dayOfWeek) {
+    public TreeMap<TimeOfDay, List<TrainingSession>> getTrainingSessionsForDay(DayOfWeek dayOfWeek) {
 
         TreeMap<TimeOfDay, List<TrainingSession>> dayMap = timetable.get(dayOfWeek);
 
         if (dayMap == null) {
-            return new ArrayList<>();
+            return new TreeMap<>();
         }
 
-        List<TrainingSession> result = new ArrayList<>();
-
-        for (TimeOfDay time : dayMap.navigableKeySet()) {
-            result.addAll(dayMap.get(time));
-        }
-
-        return result;
+        return new TreeMap<>(dayMap);
     }
 
     public List<TrainingSession> getTrainingSessionsForDayAndTime(
@@ -59,10 +47,10 @@ public class Timetable {
             return new ArrayList<>();
         }
 
-        return sessions;
+        return new ArrayList<>(sessions);
     }
 
-    public static class CounterOfTrainings {
+    public static class CounterOfTrainings implements Comparable<CounterOfTrainings> {
 
         private Coach coach;
         private int count;
@@ -78,6 +66,11 @@ public class Timetable {
 
         public int getCount() {
             return count;
+        }
+
+        @Override
+        public int compareTo(CounterOfTrainings other) {
+            return Integer.compare(other.count, this.count);
         }
     }
 
@@ -102,7 +95,7 @@ public class Timetable {
             result.add(new CounterOfTrainings(entry.getKey(), entry.getValue()));
         }
 
-        result.sort((a, b) -> b.getCount() - a.getCount());
+        Collections.sort(result);
 
         return result;
     }

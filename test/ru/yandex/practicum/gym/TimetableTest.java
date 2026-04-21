@@ -21,10 +21,18 @@ public class TimetableTest {
 
         timetable.addNewTrainingSession(session);
 
-        List<TrainingSession> monday = timetable.getTrainingSessionsForDay(DayOfWeek.MONDAY);
-        List<TrainingSession> tuesday = timetable.getTrainingSessionsForDay(DayOfWeek.TUESDAY);
+        TreeMap<TimeOfDay, List<TrainingSession>> monday =
+                timetable.getTrainingSessionsForDay(DayOfWeek.MONDAY);
 
-        assertEquals(1, monday.size());
+        TreeMap<TimeOfDay, List<TrainingSession>> tuesday =
+                timetable.getTrainingSessionsForDay(DayOfWeek.TUESDAY);
+
+        int mondayCount = 0;
+        for (List<TrainingSession> list : monday.values()) {
+            mondayCount += list.size();
+        }
+
+        assertEquals(1, mondayCount);
         assertTrue(tuesday.isEmpty());
     }
 
@@ -58,16 +66,33 @@ public class TimetableTest {
         timetable.addNewTrainingSession(thursdayChild);
         timetable.addNewTrainingSession(saturdayChild);
 
-        List<TrainingSession> monday = timetable.getTrainingSessionsForDay(DayOfWeek.MONDAY);
-        List<TrainingSession> thursday = timetable.getTrainingSessionsForDay(DayOfWeek.THURSDAY);
-        List<TrainingSession> tuesday = timetable.getTrainingSessionsForDay(DayOfWeek.TUESDAY);
+        TreeMap<TimeOfDay, List<TrainingSession>> monday =
+                timetable.getTrainingSessionsForDay(DayOfWeek.MONDAY);
 
-        assertEquals(1, monday.size());
-        assertEquals(2, thursday.size());
+        TreeMap<TimeOfDay, List<TrainingSession>> thursday =
+                timetable.getTrainingSessionsForDay(DayOfWeek.THURSDAY);
+
+        TreeMap<TimeOfDay, List<TrainingSession>> tuesday =
+                timetable.getTrainingSessionsForDay(DayOfWeek.TUESDAY);
+
+        int mondayCount = 0;
+        for (List<TrainingSession> list : monday.values()) {
+            mondayCount += list.size();
+        }
+
+        int thursdayCount = 0;
+        for (List<TrainingSession> list : thursday.values()) {
+            thursdayCount += list.size();
+        }
+
+        assertEquals(1, mondayCount);
+        assertEquals(2, thursdayCount);
         assertTrue(tuesday.isEmpty());
 
-        assertEquals(13, thursday.get(0).getTimeOfDay().getHours());
-        assertEquals(20, thursday.get(1).getTimeOfDay().getHours());
+        List<TimeOfDay> times = new ArrayList<>(thursday.keySet());
+
+        assertEquals(13, times.get(0).getHours());
+        assertEquals(20, times.get(1).getHours());
     }
 
     @Test
@@ -114,7 +139,7 @@ public class TimetableTest {
     void testEmptyTimetable() {
         Timetable timetable = new Timetable();
 
-        List<TrainingSession> result =
+        TreeMap<TimeOfDay, List<TrainingSession>> result =
                 timetable.getTrainingSessionsForDay(DayOfWeek.MONDAY);
 
         assertTrue(result.isEmpty());
